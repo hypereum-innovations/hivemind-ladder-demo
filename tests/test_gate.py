@@ -20,6 +20,9 @@ class ApprovalGateTest(unittest.TestCase):
         self.assertIs(request.decision, Decision.PENDING)
         gate.decide(request, approved=True, reviewer="user:controller")
         self.assertIs(request.decision, Decision.APPROVED)
+        self.assertEqual(request.decided_by, "user:controller")
+        self.assertIsNotNone(request.decided_at)
+        self.assertEqual(gate.audit.entries[-1].actor, "user:controller")
 
     def test_requester_cannot_approve_itself(self):
         gate = ApprovalGate(threshold=50)
