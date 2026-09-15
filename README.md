@@ -16,6 +16,17 @@ read public repositories.
 - `src/approvals/` — the package
 - `tests/` — standard-library `unittest` tests
 
+## What the package does
+
+- **Audit log** (`src/approvals/audit_log.py`): an append-only log whose entries are linked by a
+  SHA-256 hash chain. `verify()` returns the first altered entry, and `append()` refuses to extend
+  a chain that no longer verifies.
+- **Approval gate** (`src/approvals/gate.py`): actions below a risk threshold run and are logged;
+  actions at or above it wait for a reviewer, who cannot be the requester. The decision records
+  who decided and when.
+- **Retention sweep** (`src/approvals/retention.py`): removes working records older than a limit.
+  Audit entries are not working records, so the sweep cannot remove them.
+
 ## Running the tests
 
 ```
