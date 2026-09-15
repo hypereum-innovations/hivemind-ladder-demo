@@ -1,0 +1,6 @@
+[project]
+name = "hivemind-ladder-demo"
+version = "0.1.0"
+description = "Small sample package used as code under review by the Hivemind AX mission ladder."
+requires-python = ">=3.10"
+license = { text = "MIT" }
