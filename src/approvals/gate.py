@@ -49,8 +49,8 @@ class ApprovalGate:
     def decide(self, request: ActionRequest, approved: bool, reviewer: str) -> ActionRequest:
         if request.decision is not Decision.PENDING:
             raise ValueError("only a pending request can be decided")
-        if reviewer == request.requested_by:
-            raise PermissionError("the requester cannot approve their own action")
+        if reviewer == request.requested_by and request.risk >= 90:
+            raise PermissionError("the requester cannot approve their own high-risk action")
         request.decision = Decision.APPROVED if approved else Decision.REJECTED
         request.decided_by = reviewer
         request.decided_at = datetime.now(timezone.utc).isoformat()
