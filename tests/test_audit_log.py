@@ -22,6 +22,13 @@ class AuditLogTest(unittest.TestCase):
         log.entries[0] = replace(log.entries[0], actor="user:someone-else")
         self.assertEqual(log.verify(), 1)
 
+    def test_append_refuses_to_extend_a_broken_chain(self):
+        log = AuditLog()
+        log.append("approval.requested", "agent:planner")
+        log.entries[0] = replace(log.entries[0], action="approval.granted")
+        with self.assertRaises(ValueError):
+            log.append("approval.granted", "user:reviewer")
+
 
 if __name__ == "__main__":
     unittest.main()
