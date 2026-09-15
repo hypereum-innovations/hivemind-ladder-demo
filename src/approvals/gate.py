@@ -7,6 +7,7 @@ shows every action, not only the ones a person reviewed.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from enum import Enum
 
 from .audit_log import AuditLog
@@ -25,6 +26,8 @@ class ActionRequest:
     risk: int
     requested_by: str
     decision: Decision = Decision.PENDING
+    decided_by: str | None = None
+    decided_at: str | None = None
 
 
 @dataclass
@@ -49,5 +52,11 @@ class ApprovalGate:
         if reviewer == request.requested_by:
             raise PermissionError("the requester cannot approve their own action")
         request.decision = Decision.APPROVED if approved else Decision.REJECTED
-        self.audit.append(f"approval.{request.decision.value}", reviewer, {"action": request.action})
+        request.decided_by = reviewer
+        request.decided_at = datetime.now(timezone.utc).isoformat()
+        self.audit.append(
+            f"approval.{request.decision.value}",
+            reviewer,
+            {"action": request.action, "decided_at": request.decided_at},
+        )
         return request
