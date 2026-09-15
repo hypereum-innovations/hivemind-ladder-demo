@@ -39,6 +39,9 @@ class AuditLog:
     entries: list[AuditEntry] = field(default_factory=list)
 
     def append(self, action: str, actor: str, details: dict | None = None) -> AuditEntry:
+        broken = self.verify()
+        if broken is not None:
+            raise ValueError(f"audit chain is broken at entry {broken}; refusing to append")
         details = dict(details or {})
         seq = len(self.entries) + 1
         prev_hash = self.entries[-1].hash if self.entries else GENESIS_HASH
